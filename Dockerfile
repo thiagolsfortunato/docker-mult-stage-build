@@ -1,3 +1,4 @@
+# syntax = docker/dockerfile:1.0-experimental
 FROM python:3.7-alpine as base
 
 LABEL maintainer="thiagolsfortunato@hotmail.com"
@@ -6,7 +7,7 @@ LABEL maintainer="thiagolsfortunato@hotmail.com"
 WORKDIR /app
 
 # UPDATE AND INSTALL CURL
-RUN apk --update --no-cache add curl
+RUN apk update --no-cache
 
 FROM base as build
 
@@ -17,24 +18,22 @@ RUN pip install --install-option="--prefix=/install" -r /install/requirements.tx
 
 FROM base as dev
 
-# COPY DEPENDENCIES INSTALLED
-COPY --from=build /install /usr/local
+RUN apk update --no-cache add curl
 
-## COPY APP
-COPY . /app/
+EXPOSE 8000
 
 ## COMMAND
 CMD ["python", "app.py"]
 
 FROM base as prod
 
+# COPY DEPENDENCIES INSTALLED
+COPY --from=build /install /usr/local
+
 # CREATE USER APP 
 RUN addgroup -S app && \
     adduser -S -G app app && \
     chown -R app:app /app
-
-# COPY DEPENDENCIES INSTALLED
-COPY --from=build /install /usr/local
 
 # COPY APP
 COPY app.py /app/
