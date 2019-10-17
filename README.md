@@ -17,7 +17,8 @@ docker build --target prod -t python-app:prod .
 ## Docker Build Kit
 
 ```bash
-
+DOCKER_BUILDKIT=1 docker build --target dev -t python-app:dev .
+DOCKER_BUILDKIT=1 docker build --target prod -t python-app:prod .
 ```
 
 ### references:
